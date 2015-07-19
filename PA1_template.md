@@ -1,15 +1,11 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
 Unzip the data from the zip file, get a preview of the data.
 
-```{r}
+
+```r
 ## Unzip the file
 activityCSV <- unzip("activity.zip")
 
@@ -21,12 +17,22 @@ rm(activityCSV)
 
 ##Preview Data
 head(rawActivityData)
+```
 
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 Remove any NAs and change make sure the date column is in the date format
 
-```{r}
+
+```r
 ##Remove any NAs
 
 cleanedActivityData <- na.omit(rawActivityData)
@@ -34,7 +40,6 @@ cleanedActivityData <- na.omit(rawActivityData)
 ##Change Date column to date format
 
 cleanedActivityData$date <- as.Date(cleanedActivityData$date)
-
 ```
 
 
@@ -42,53 +47,76 @@ cleanedActivityData$date <- as.Date(cleanedActivityData$date)
 
 Load the dplyr package for easier coding and data manipulation then calculate the total number of steps taken per day.
 
-```{r}
+
+```r
 ## Load the dplyr package
 library(dplyr)
+```
 
+```
+## Warning: package 'dplyr' was built under R version 3.1.3
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following object is masked from 'package:stats':
+## 
+##     filter
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 ## Group data by date and sumarize
 
 stepsPerDay <- cleanedActivityData %>%
   group_by(date) %>%
     summarize(StepSum = sum(steps))
-
 ```
 
 Make a histogram of the total number of steps taken each day
-```{r}
 
+```r
 ## Create historgram
 hist(stepsPerDay$StepSum
   , xlab="Total number of steps taken each day"
   , ylab="Number of Days"
   , main="Histogram of total number of steps taken each day"
   )
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 Calculate and report the mean and median of the total number of steps taken per day.
 
-```{r}
+
+```r
 ## Calculate Mean and Median
 meanSteps <- mean(stepsPerDay$StepSum)
 medianSteps <- median(stepsPerDay$StepSum)
-
 ```
 
 ### The mean steps taken per day was:
-```{r echo=FALSE} 
-meanSteps
+
+```
+## [1] 10766.19
 ```
 
 ### The median steps taken per day was:  
-```{r echo=FALSE}
-medianSteps
+
+```
+## [1] 10765
 ```
 
 ## What is the average daily activity pattern?
 Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis).
 
-```{r}
+
+```r
 ## Group data by 5 miunte interval and take the mean
 fiveMinuteIntervalMean <- cleanedActivityData %>%
     group_by(interval) %>%
@@ -100,28 +128,40 @@ plot(fiveMinuteIntervalMean$interval, fiveMinuteIntervalMean$meanSteps
   , xlab="5 Minute Interval"
   , ylab="Mean Steps Taken"
   , main="Average number of steps taken, averaged across all days (5 minute intervals)")
-
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
 ### Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 maxStepInterval <- fiveMinuteIntervalMean$interval[which.max(fiveMinuteIntervalMean$meanSteps)]
 
 maxStepInterval
 ```
 
+```
+## [1] 835
+```
+
 ## Imputing missing values
 Calculate and report the total number of missing values in the dataset
 
-```{r}
+
+```r
 countNAs <- sum(is.na(rawActivityData$steps))
 
 countNAs
 ```
 
+```
+## [1] 2304
+```
+
 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc. Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
-```{r}
+
+```r
 ## Make a new dataset to be manipulated
 
 filledData <- rawActivityData
@@ -144,9 +184,13 @@ countNAsFilled <- sum(is.na(filledData$steps))
 countNAsFilled
 ```
 
-Make a histogram of the total number of steps taken each day.
-```{r}
+```
+## [1] 0
+```
 
+Make a histogram of the total number of steps taken each day.
+
+```r
 ## Group data by date and sumarize
 
 stepsPerDayFilled <- filledData %>%
@@ -159,26 +203,29 @@ hist(stepsPerDayFilled$StepSum
   , ylab="Number of Days"
   , main="Histogram of total number of steps taken each day"
   )
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-12-1.png) 
 
 Calculate and report the mean and median of the total number of steps taken per day.
 
-```{r}
+
+```r
 ## Calculate Mean and Median
 meanSteps <- mean(stepsPerDayFilled$StepSum)
 medianSteps <- median(stepsPerDayFilled$StepSum)
-
 ```
 
 ### The mean steps taken per day was:
-```{r echo=FALSE} 
-meanSteps
+
+```
+## [1] 10766.19
 ```
 
 ### The median steps taken per day was:  
-```{r echo=FALSE}
-medianSteps
+
+```
+## [1] 10766.19
 ```
 
 Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
@@ -190,20 +237,18 @@ Do these values differ from the estimates from the first part of the assignment?
 
 Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
 
-```{r}
 
+```r
 filledData$weekdayWeekend <- ifelse(
   is.element(weekdays(filledData$date), c('Saturday','Sunday'))
   , 'weekend'
   , 'weekday')
-
-
 ```
 
 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
-```{r}
 
+```r
 ## Get the average number of steps taken across 5 minute intervals, averaged across weekdays or weekends
 weekdayWeekendAverage <- filledData %>%
     group_by(weekdayWeekend, interval) %>%
@@ -211,7 +256,13 @@ weekdayWeekendAverage <- filledData %>%
 
 ## Load ggplot2 for easier plotting
 library(ggplot2)
+```
 
+```
+## Warning: package 'ggplot2' was built under R version 3.1.3
+```
+
+```r
 qplot(interval
   , averageSteps
   , data=weekdayWeekendAverage
@@ -221,6 +272,7 @@ qplot(interval
   , ylab="Average Number of steps"
   , main="Average Number of Steps Weekdays vs. Weekend"
   , facets = weekdayWeekend ~ .)
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-17-1.png) 
 
